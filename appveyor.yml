@@ -22,9 +22,8 @@ environment:
     #  CHANNEL: stable
 
     # For the integration test
-    # Comment out because it is failing for not locally reproducable reasons (maybe LIB is set incorrectly)
-    #- TARGET: x86_64-pc-windows-msvc
-    #  CHANNEL: nightly
+    - TARGET: x86_64-pc-windows-msvc
+      CHANNEL: nightly
 
 matrix:
   fast_finish: true
@@ -45,9 +44,12 @@ install:
       }
   - appveyor-retry appveyor DownloadFile https://win.rustup.rs/ -FileName rustup-init.exe
   - rustup-init.exe -y --default-host %TARGET% --default-toolchain %CHANNEL%
-  - SET PATH=%PATH%;%CARGO_HOME%\bin
-  # We need python 3.x 64 bit as default in path for the develop test
-  - SET PATH=C:\Python36-x64\bin;%PATH%
+  # See https://github.com/PyO3/pyo3/blob/master/ci/appveyor/setup.ps1
+  - ps: |
+      $env:PATH="C:\Python36-x64\bin;C:\Python36-x64\bin\Scripts;$env:PATH"
+      $pythonLocation = Invoke-Expression "python -c `"import sys; print(sys.base_prefix)`""
+      $env:LIBPATH = "$env:LIBPATH; $( Join-Path $pythonLocation "libs" )"
+  - call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64
   - rustc -V
   - cargo -V
 
