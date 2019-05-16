@@ -24,29 +24,30 @@ environment:
     # For the integration test
     - TARGET: x86_64-pc-windows-msvc
       CHANNEL: nightly
+      PYTHON: "C:/Python36-x64"
 
 matrix:
   fast_finish: true
 
 install:
-  - cinst miniconda3
-  - ps: |
-      # For the gnu target we need gcc, provided by mingw. mingw which is already preinstalled,
-      # but we need the right version (32-bit or 64-bit) to the PATH.
-      # See https://www.appveyor.com/docs/build-environment/#mingw-msys-cygwin
-      if ($env:target -like "*-gnu") {
-        if ($env:target -like "x86_64-*") { # x86_64-pc-windows-gnu
-          $env:path += ";C:\msys64\mingw64\bin"
-        } else { # i686-pc-windows-gnu
-          $env:path += ";C:\msys64\mingw32\bin"
-        }
-        gcc --version
-      }
+  #- cinst miniconda3
+  #- ps: |
+  #    # For the gnu target we need gcc, provided by mingw. mingw which is already preinstalled,
+  #    # but we need the right version (32-bit or 64-bit) to the PATH.
+  #    # See https://www.appveyor.com/docs/build-environment/#mingw-msys-cygwin
+  #    if ($env:target -like "*-gnu") {
+  #      if ($env:target -like "x86_64-*") { # x86_64-pc-windows-gnu
+  #        $env:path += ";C:\msys64\mingw64\bin"
+  #      } else { # i686-pc-windows-gnu
+  #        $env:path += ";C:\msys64\mingw32\bin"
+  #      }
+  #      gcc --version
+  #    }
   - appveyor-retry appveyor DownloadFile https://win.rustup.rs/ -FileName rustup-init.exe
   - rustup-init.exe -y --default-host %TARGET% --default-toolchain %CHANNEL%
   # See https://github.com/PyO3/pyo3/blob/master/ci/appveyor/setup.ps1
   - ps: |
-      $env:PATH="C:\Python36-x64\bin;C:\Python36-x64\bin\Scripts;$env:PATH"
+      $env:PATH="$env:PYTHON;$env:PYTHON\\Scripts;$env:PATH"
       $pythonLocation = Invoke-Expression "python -c `"import sys; print(sys.base_prefix)`""
       $env:LIBPATH = "$env:LIBPATH; $( Join-Path $pythonLocation "libs" )"
   - call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64
