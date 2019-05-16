@@ -45,6 +45,7 @@ install:
   #    }
   - appveyor-retry appveyor DownloadFile https://win.rustup.rs/ -FileName rustup-init.exe
   - rustup-init.exe -y --default-host %TARGET% --default-toolchain %CHANNEL%
+  - SET PATH=%PATH%;%CARGO_HOME%\bin
   # See https://github.com/PyO3/pyo3/blob/master/ci/appveyor/setup.ps1
   - ps: |
       $env:PATH="$env:PYTHON;$env:PYTHON\\Scripts;$env:PATH"
