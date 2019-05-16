@@ -52,9 +52,8 @@ install:
       $pythonLocation = Invoke-Expression "python -c `"import sys; print(sys.base_prefix)`""
       $env:LIBPATH = "$env:LIBPATH; $( Join-Path $pythonLocation "libs" )"
       $env:PATH="$env:PATH;$((Get-Location).Path)/rust-nightly-$env:TARGET/bin"
-  - SET PATH=C:\Program Files (x86)\MSBuild\12.0\Bin;%PATH%
-  - set VCVARSALL="C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat"
-  - call "C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" amd64
+  - call "C:\Program Files\Microsoft SDKs\Windows\v7.1\Bin\SetEnv.cmd" /x64
+  - call "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x86_amd64
   - rustc -V
   - cargo -V
 
