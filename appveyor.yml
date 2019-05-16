@@ -55,7 +55,7 @@ install:
   - ps: |
       $env:PATH="$env:PYTHON;$env:PYTHON\\Scripts;$env:PATH"
       $pythonLocation = Invoke-Expression "python -c `"import sys; print(sys.base_prefix)`""
-      $env:LIBPATH = "$env:LIBPATH; $( Join-Path $pythonLocation "libs" )"
+      $env:LIBPATH = "$env:LIBPATH;$( Join-Path $pythonLocation "libs" )"
       $env:PATH="$env:PATH;$((Get-Location).Path)/rust-nightly-$env:TARGET/bin"
 
   - echo %PATH%
