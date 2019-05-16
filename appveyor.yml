@@ -10,10 +10,10 @@ environment:
     secure: 3xTkaAvLd84qjLwY/quMb0w1Kh5NRXQ0a/zHtjnH4WY=
   matrix:
     # Publishes to pypi
-    - TARGET: i686-pc-windows-msvc
-      CHANNEL: stable
-    - TARGET: x86_64-pc-windows-msvc
-      CHANNEL: stable
+    #- TARGET: i686-pc-windows-msvc
+    #  CHANNEL: stable
+    #- TARGET: x86_64-pc-windows-msvc
+    #  CHANNEL: stable
 
     # Commented out to avoid duplicate uploads to pypi
     #- TARGET: i686-pc-windows-gnu
