@@ -169,6 +169,18 @@ enum Opt {
         /// Use as `--rustc-extra-args="--my-arg"`
         #[structopt(long = "rustc-extra-args")]
         rustc_extra_args: Vec<String>,
+        /// If the python bindings are behind a `--features` flag, the name of that flag.
+        ///
+        /// For example, the following Cargo.toml would require setting this value to `python`
+        /// ```
+        /// [dependencies]
+        /// pyo3 = { version = "...", optional = true }`
+        /// ...
+        /// [features]
+        /// python = ["pyo3"]
+        /// ```
+        #[structopt(long = "python-feature-gate")]
+        python_feature_gate: Option<String>,
     },
 }
 
@@ -287,6 +299,7 @@ fn run() -> Result<(), Error> {
             rustc_extra_args,
             release,
             strip,
+            python_feature_gate,
         } => {
             let venv_dir = match env::var_os("VIRTUAL_ENV") {
                 Some(dir) => PathBuf::from(dir),
@@ -303,6 +316,7 @@ fn run() -> Result<(), Error> {
                 &venv_dir,
                 release,
                 strip,
+                python_feature_gate,
             )?;
         }
     }

@@ -66,6 +66,8 @@ pub struct BuildContext {
     pub cargo_extra_args: Vec<String>,
     /// Extra arguments that will be passed to rustc as `cargo rustc [...] -- [arg1] [arg2]`
     pub rustc_extra_args: Vec<String>,
+    /// For crates with optional python bindings, the feature gate the bindings are behind
+    pub python_feature_gate: Option<String>,
     /// The available python interpreter
     pub interpreter: Vec<PythonInterpreter>,
     /// Cargo.toml as resolved by [cargo_metadata]

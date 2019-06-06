@@ -137,7 +137,7 @@ pub fn compile(
     bindings_crate: &BridgeModel,
 ) -> Result<HashMap<String, PathBuf>, Error> {
     // Some stringly typing to satisfy the borrow checker
-    let python_feature = match python_interpreter {
+    let mut python_feature = match python_interpreter {
         Some(python_interpreter) => format!(
             "{}/python{}",
             bindings_crate.unwrap_bindings(),
@@ -145,12 +145,19 @@ pub fn compile(
         ),
         None => "".to_string(),
     };
+    let python_feature_gate = &context.python_feature_gate.clone().unwrap_or("".to_string());
+    if context.python_feature_gate.is_some() {
+        python_feature.push(',');
+        python_feature.push_str(python_feature_gate);
+    }
 
     let mut shared_args = vec!["--manifest-path", context.manifest_path.to_str().unwrap()];
 
     if *bindings_crate == BridgeModel::Bindings("pyo3".to_string()) && python_feature != "" {
         // This is a workaround for a bug in pyo3's build.rs
         shared_args.extend(&["--features", &python_feature]);
+    } else if context.python_feature_gate.is_some() {
+        shared_args.extend(&["--features", python_feature_gate]);
     }
 
     // We need to pass --bins / --lib to set the rustc extra args later

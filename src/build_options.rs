@@ -7,7 +7,7 @@ use crate::Manylinux;
 use crate::Metadata21;
 use crate::PythonInterpreter;
 use crate::Target;
-use cargo_metadata::{Metadata, MetadataCommand, Node};
+use cargo_metadata::{CargoOpt, Metadata, MetadataCommand, Node};
 use failure::{bail, err_msg, format_err, Error, ResultExt};
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
@@ -75,6 +75,18 @@ pub struct BuildOptions {
     /// Use as `--rustc-extra-args="--my-arg"`
     #[structopt(long = "rustc-extra-args")]
     pub rustc_extra_args: Vec<String>,
+    /// If the python bindings are behind a `--features` flag, the name of that flag.
+    ///
+    /// For example, the following Cargo.toml would require setting this value to `python`
+    /// ```
+    /// [dependencies]
+    /// pyo3 = { version = "...", optional = true }`
+    /// ...
+    /// [features]
+    /// python = ["pyo3"]
+    /// ```
+    #[structopt(long = "python-feature-gate")]
+    pub python_feature_gate: Option<String>,
 }
 
 impl Default for BuildOptions {
@@ -89,6 +101,7 @@ impl Default for BuildOptions {
             target: None,
             cargo_extra_args: Vec::new(),
             rustc_extra_args: Vec::new(),
+            python_feature_gate: None,
         }
     }
 }
@@ -141,6 +154,7 @@ impl BuildOptions {
         // Failure fails here since cargo_metadata does some weird stuff on their side
         let cargo_metadata = MetadataCommand::new()
             .manifest_path(&self.manifest_path)
+            .features(CargoOpt::SomeFeatures(self.python_feature_gate.iter().cloned().collect()))
             .exec()
             .map_err(|e| format_err!("Cargo metadata failed: {}", e))?;
 
@@ -166,6 +180,7 @@ impl BuildOptions {
         }
 
         let rustc_extra_args = split_extra_args(&self.rustc_extra_args)?;
+        let python_feature_gate = self.python_feature_gate.clone();
 
         let manylinux = if self.skip_auditwheel {
             eprintln!("⚠ --skip-auditwheel is deprecated, use --manylinux=1-unchecked");
@@ -187,6 +202,7 @@ impl BuildOptions {
             manylinux,
             cargo_extra_args,
             rustc_extra_args,
+            python_feature_gate,
             interpreter,
             cargo_metadata,
         })

@@ -24,6 +24,7 @@ pub fn develop(
     venv_dir: &Path,
     release: bool,
     strip: bool,
+    python_feature_gate: Option<String>,
 ) -> Result<(), Error> {
     let target = Target::from_target_triple(None)?;
 
@@ -43,6 +44,7 @@ pub fn develop(
         target: None,
         cargo_extra_args,
         rustc_extra_args,
+        python_feature_gate,
     };
 
     let build_context = build_options.into_build_context(release, strip)?;
